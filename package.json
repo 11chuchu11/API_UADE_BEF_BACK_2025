@@ -1,0 +1,46 @@
+{
+  "name": "express",
+  "version": "1.0.0",
+  "license": "MIT",
+  "scripts": {
+    "dev": "node --watch --env-file=.env -r ts-node/register ./index.ts",
+    "poll-bbdd": "ts-node prisma/seed.ts",
+    "clean-bbdd": "ts-node prisma/clean.ts",
+    "lint": "eslint \"src/**/*.{ts,tsx}\"",
+    "lint:fix": "eslint \"src/**/*.{ts,tsx}\" --fix",
+    "format": "prettier \"src/**/*.{ts,tsx,js,json,md}\" --write"
+  },
+  "dependencies": {
+    "@prisma/client": "^6.19.0",
+    "@prisma/extension-accelerate": "2.0.2",
+    "bcrypt": "^6.0.0",
+    "cors": "^2.8.5",
+    "express": "5.1.0",
+    "jsonwebtoken": "^9.0.2",
+    "moment": "^2.30.1",
+    "moment-timezone": "^0.6.0",
+    "nodemailer": "^7.0.10",
+    "zod": "^4.1.12"
+  },
+  "devDependencies": {
+    "@types/bcrypt": "6.0.0",
+    "@types/cors": "^2.8.19",
+    "@types/express": "5.0.5",
+    "@types/jsonwebtoken": "9.0.10",
+    "@types/node": "22.19.0",
+    "@types/nodemailer": "^7.0.4",
+    "@typescript-eslint/eslint-plugin": "^8.47.0",
+    "@typescript-eslint/parser": "^8.47.0",
+    "eslint": "^9.39.1",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-import": "^2.32.0",
+    "eslint-plugin-prettier": "^5.5.4",
+    "prettier": "^3.6.2",
+    "prisma": "6.19.0",
+    "ts-node": "10.9.2",
+    "typescript": "5.8.2"
+  },
+  "prisma": {
+    "seed": "ts-node prisma/seed.ts"
+  }
+}
