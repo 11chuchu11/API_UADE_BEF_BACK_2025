@@ -13,7 +13,9 @@ const createAppointmentSchema = object({
     patient: string().min(2).max(150).regex(nameRegex),
     phone: string().regex(phoneRegex),
     email: email(),
-    date_time: iso.datetime({ offset: true, precision: 0 }), //.refine(date => new Date(date).getTime() > new Date().getTime()),
+    date_time: iso
+      .datetime({ offset: true, precision: null })
+      .refine(date => new Date(date).getTime() > new Date().getTime()),
     state: enumeration(['requested', 'confirmed', 'cancelled']),
     insurance: object({
       id: number(),
@@ -29,7 +31,9 @@ const updateAppointmentSchema = object({
     patient: string().min(2).max(150).regex(nameRegex),
     phone: string().regex(phoneRegex),
     email: email(),
-    date_time: iso.datetime().refine(date => new Date(date).getTime() > new Date().getTime()),
+    date_time: iso
+      .datetime({ offset: true, precision: null })
+      .refine(date => new Date(date).getTime() > new Date().getTime()),
     state: enumeration(['requested', 'confirmed', 'cancelled']),
     insurance: object({
       id: number(),

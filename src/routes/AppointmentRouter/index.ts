@@ -13,7 +13,9 @@ import {
 
 const appointmentRouter = Router();
 
-appointmentRouter.get('/all', handleAuthorization, AppointmentController.findAllAppointments);
+appointmentRouter.get('/all', AppointmentController.findAllAppointments);
+
+appointmentRouter.get('/all/next', AppointmentController.findNextAppointments);
 
 appointmentRouter.get(
   '/:id',

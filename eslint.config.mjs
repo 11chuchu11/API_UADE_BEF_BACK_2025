@@ -70,7 +70,6 @@ export default [
         },
       ],
 
-      // Para Express suele estar bien permitir console.log
       'no-console': 'off',
     },
   },

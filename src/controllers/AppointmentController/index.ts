@@ -16,6 +16,16 @@ class AppointmentController {
     }
   }
 
+  async findNextAppointments(_req: Request, res: Response, next: NextFunction) {
+    try {
+      const response = await AppointmentService.findNextAppointments();
+
+      res.json(response);
+    } catch (error) {
+      next(error);
+    }
+  }
+
   async findAllAppointments(_req: Request, res: Response, next: NextFunction) {
     try {
       const response = await AppointmentService.findAllAppointments();

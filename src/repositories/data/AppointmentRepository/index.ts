@@ -17,6 +17,19 @@ class AppointmentRepository implements IAppointmentRepository {
     });
   }
 
+  findNextAppointments(): Promise<AppointmentWithInsurance[]> {
+    return prisma.appointment.findMany({
+      where: {
+        state: {
+          not: 'cancelled',
+        },
+      },
+      include: {
+        insurance: true,
+      },
+    });
+  }
+
   findAllAppointments(): Promise<AppointmentWithInsurance[]> {
     return prisma.appointment.findMany({
       include: {

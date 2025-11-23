@@ -19,11 +19,11 @@ API REST desarrollada con Express, TypeScript y Prisma para la gestión de citas
 ## ✨ Características
 
 - **Autenticación JWT**: Sistema de autenticación seguro con tokens JWT
-- **Gestión de Citas Médicas**: CRUD completo para citas médicas con estados (requested, confirmed, cancelled)
+- **Gestión de Citas Médicas**: CRUD completo para citas médicas con estados (requested, confirmed, cancelled) y filtrado de próximas citas
 - **Gestión de Seguros**: Administración de seguros médicos con activación/desactivación
 - **Validación de Datos**: Validación robusta usando Zod
 - **Arquitectura en Capas**: Separación clara entre controladores, servicios y repositorios
-- **Envío de Emails**: Integración con Gmail para notificaciones por correo electrónico
+- **Envío de Emails**: Integración con Gmail para notificaciones automáticas por correo electrónico al crear, confirmar o cancelar citas
 - **Manejo de Errores**: Middleware centralizado para manejo de errores
 - **TypeScript**: Código tipado para mayor seguridad y mantenibilidad
 
@@ -371,15 +371,13 @@ Authorization: Bearer <token>
 
 ### 📅 Citas Médicas (`/api/appointment`)
 
+**Formato de Respuesta**: Todas las respuestas de citas incluyen los campos `date` y `time` formateados:
+- `date`: Fecha en formato `DD/MM/YYYY` (ej: "20/01/2025")
+- `time`: Hora en formato 12 horas con AM/PM (ej: "10:00 AM", "02:30 PM")
+
 #### GET `/api/appointment/all`
 
-Obtiene todas las citas médicas.
-
-**Headers:**
-
-```
-Authorization: Bearer <token>
-```
+Obtiene todas las citas médicas (público, no requiere autenticación).
 
 **Respuesta exitosa (200):**
 
@@ -397,8 +395,34 @@ Authorization: Bearer <token>
       "description": "Obra Social de Empresas",
       "active": true
     },
-    "date": "2025-01-20",
-    "time": "10:00"
+    "date": "20/01/2025",
+    "time": "10:00 AM"
+  }
+]
+```
+
+#### GET `/api/appointment/all/next`
+
+Obtiene todas las próximas citas médicas (excluye las canceladas). Útil para ver solo las citas activas.
+
+**Respuesta exitosa (200):**
+
+```json
+[
+  {
+    "id": 1,
+    "patient": "Juan Pérez",
+    "phone": "+5491123456789",
+    "email": "juan@example.com",
+    "state": "requested",
+    "insurance": {
+      "id": 1,
+      "name": "OSDE",
+      "description": "Obra Social de Empresas",
+      "active": true
+    },
+    "date": "20/01/2025",
+    "time": "10:00 AM"
   }
 ]
 ```
@@ -411,6 +435,26 @@ Obtiene una cita médica por su ID.
 
 ```
 Authorization: Bearer <token>
+```
+
+**Respuesta exitosa (200):**
+
+```json
+{
+  "id": 1,
+  "patient": "Juan Pérez",
+  "phone": "+5491123456789",
+  "email": "juan@example.com",
+  "state": "requested",
+  "insurance": {
+    "id": 1,
+    "name": "OSDE",
+    "description": "Obra Social de Empresas",
+    "active": true
+  },
+  "date": "20/01/2025",
+  "time": "10:00 AM"
+}
 ```
 
 #### POST `/api/appointment`
@@ -447,10 +491,12 @@ Crea una nueva cita médica (público, no requiere autenticación).
     "description": "Obra Social de Empresas",
     "active": true
   },
-  "date": "2025-01-20",
-  "time": "10:00"
+  "date": "20/01/2025",
+  "time": "10:00 AM"
 }
 ```
+
+**Nota**: Al crear una cita, se envía automáticamente un email de confirmación al paciente con el estado "requested".
 
 #### PUT `/api/appointment/:id`
 
@@ -477,6 +523,26 @@ Authorization: Bearer <token>
 }
 ```
 
+**Respuesta exitosa (200):**
+
+```json
+{
+  "id": 1,
+  "patient": "Juan Pérez",
+  "phone": "+5491123456789",
+  "email": "juan@example.com",
+  "state": "confirmed",
+  "insurance": {
+    "id": 1,
+    "name": "OSDE",
+    "description": "Obra Social de Empresas",
+    "active": true
+  },
+  "date": "20/01/2025",
+  "time": "11:00 AM"
+}
+```
+
 #### PATCH `/api/appointment/:id/confirm`
 
 Confirma una cita médica (cambia el estado a `confirmed`).
@@ -487,6 +553,28 @@ Confirma una cita médica (cambia el estado a `confirmed`).
 Authorization: Bearer <token>
 ```
 
+**Respuesta exitosa (200):**
+
+```json
+{
+  "id": 1,
+  "patient": "Juan Pérez",
+  "phone": "+5491123456789",
+  "email": "juan@example.com",
+  "state": "confirmed",
+  "insurance": {
+    "id": 1,
+    "name": "OSDE",
+    "description": "Obra Social de Empresas",
+    "active": true
+  },
+  "date": "20/01/2025",
+  "time": "10:00 AM"
+}
+```
+
+**Nota**: Al confirmar una cita, se envía automáticamente un email de confirmación al paciente.
+
 #### PATCH `/api/appointment/:id/cancel`
 
 Cancela una cita médica (cambia el estado a `cancelled`).
@@ -496,6 +584,28 @@ Cancela una cita médica (cambia el estado a `cancelled`).
 ```
 Authorization: Bearer <token>
 ```
+
+**Respuesta exitosa (200):**
+
+```json
+{
+  "id": 1,
+  "patient": "Juan Pérez",
+  "phone": "+5491123456789",
+  "email": "juan@example.com",
+  "state": "cancelled",
+  "insurance": {
+    "id": 1,
+    "name": "OSDE",
+    "description": "Obra Social de Empresas",
+    "active": true
+  },
+  "date": "20/01/2025",
+  "time": "10:00 AM"
+}
+```
+
+**Nota**: Al cancelar una cita, se envía automáticamente un email de notificación al paciente.
 
 #### DELETE `/api/appointment/:id`
 
@@ -528,6 +638,8 @@ La mayoría de los endpoints requieren autenticación, excepto:
 - `POST /api/auth/register`
 - `POST /api/auth`
 - `GET /api/insurance/all`
+- `GET /api/appointment/all`
+- `GET /api/appointment/all/next`
 - `POST /api/appointment`
 
 ## 📜 Scripts Disponibles
@@ -592,10 +704,22 @@ curl -X POST http://localhost:3000/api/appointment \
   }'
 ```
 
-### Ejemplo 3: Obtener Todas las Citas (Requiere Autenticación)
+### Ejemplo 3: Obtener Todas las Citas (Público)
 
 ```bash
-curl -X GET http://localhost:3000/api/appointment/all \
+curl -X GET http://localhost:3000/api/appointment/all
+```
+
+### Ejemplo 3.1: Obtener Próximas Citas (Público)
+
+```bash
+curl -X GET http://localhost:3000/api/appointment/all/next
+```
+
+### Ejemplo 3.2: Obtener una Cita por ID (Requiere Autenticación)
+
+```bash
+curl -X GET http://localhost:3000/api/appointment/1 \
   -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
 ```
 
@@ -631,7 +755,9 @@ curl -X POST http://localhost:3000/api/insurance \
 - **Patient**: 2-150 caracteres, solo letras y espacios
 - **Phone**: Formato de teléfono válido
 - **Email**: Debe ser un email válido
-- **date_time**: Debe ser una fecha/hora válida en formato ISO 8601
+- **date_time**: Debe ser una fecha/hora válida en formato ISO 8601 con zona horaria (ej: `2025-01-20T10:00:00-03:00`). La fecha debe ser futura (posterior a la fecha actual)
+- **state**: Debe ser uno de los valores: `requested`, `confirmed`, `cancelled`
+- **insurance.id**: ID numérico del seguro asociado
 
 ### Seguro
 
@@ -660,11 +786,22 @@ La API devuelve errores en formato JSON:
 
 ## 📝 Notas Adicionales
 
-- Las contraseñas se encriptan usando bcrypt antes de almacenarse
-- Los tokens JWT expiran después de un tiempo determinado (configurable)
-- El envío de emails se realiza mediante Gmail usando nodemailer
-- Las fechas se manejan con moment-timezone para soporte de zonas horarias
-- La API utiliza Prisma Accelerate para optimización de consultas
+- **Formato de Fechas**: Las fechas se devuelven en formato legible (`DD/MM/YYYY`) y las horas en formato 12 horas con AM/PM (`hh:mm A`) usando moment.js con locale español
+- **Envío de Emails**: 
+  - Al crear una cita, se envía automáticamente un email de confirmación con estado "requested"
+  - Al confirmar una cita, se envía un email de confirmación
+  - Al cancelar una cita, se envía un email de notificación
+  - El envío de emails se realiza mediante Gmail usando nodemailer
+- **Seguridad**:
+  - Las contraseñas se encriptan usando bcrypt antes de almacenarse
+  - Los tokens JWT se utilizan para autenticación en endpoints protegidos
+- **Base de Datos**:
+  - La API utiliza Prisma como ORM
+  - Soporte para Prisma Accelerate para optimización de consultas
+- **Validaciones**:
+  - Todas las validaciones se realizan usando Zod
+  - Las fechas deben ser futuras (posteriores a la fecha actual)
+  - Validación estricta de formatos de email, teléfono y nombres
 
 ## 🤝 Contribución
 

@@ -19,6 +19,12 @@ class AppointmentService {
     return new ResAppointmentDTO(appointment);
   }
 
+  async findNextAppointments() {
+    const appointments = await AppointmentRepository.findNextAppointments();
+
+    return appointments.map(appointment => new ResAppointmentDTO(appointment));
+  }
+
   async findAllAppointments() {
     const appointments = await AppointmentRepository.findAllAppointments();
 

@@ -17,7 +17,7 @@ export const formatISODate = (isoString: string): FormattedDateTime => {
   m.locale('es');
 
   const date = m.format('DD/MM/YYYY');
-  const time = m.format('hh:mm a'); // am/pm nativo de moment
+  const time = m.format('hh:mm A'); // am/pm nativo de moment
 
   return { date, time };
 }

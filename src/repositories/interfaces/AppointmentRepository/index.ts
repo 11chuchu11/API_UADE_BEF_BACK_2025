@@ -8,6 +8,7 @@ export type AppointmentWithInsurance = Prisma.AppointmentGetPayload<{
 
 export interface IAppointmentRepository {
   findAppointmentById(id: number): Promise<AppointmentWithInsurance | null>;
+  findNextAppointments(): Promise<AppointmentWithInsurance[]>;
   findAllAppointments(): Promise<AppointmentWithInsurance[]>;
   createAppointment(data: ReqAppointmentCreateDTO): Promise<AppointmentWithInsurance>;
   updateAppointment(data: ReqAppointmentUpdateDTO): Promise<AppointmentWithInsurance>;
