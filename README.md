@@ -24,7 +24,8 @@ API REST desarrollada con Express, TypeScript y Prisma para la gestión de citas
 - **Validación de Datos**: Validación robusta usando Zod
 - **Arquitectura en Capas**: Separación clara entre controladores, servicios y repositorios
 - **Envío de Emails**: Integración con Gmail para notificaciones automáticas por correo electrónico al crear, confirmar o cancelar citas
-- **Manejo de Errores**: Middleware centralizado para manejo de errores
+- **Manejo de Errores**: Middleware centralizado para manejo de errores con logging automático
+- **Sistema de Logging**: Registro automático de todas las peticiones HTTP y errores para facilitar el debugging y monitoreo
 - **TypeScript**: Código tipado para mayor seguridad y mantenibilidad
 
 ## 🛠 Tecnologías
@@ -372,6 +373,7 @@ Authorization: Bearer <token>
 ### 📅 Citas Médicas (`/api/appointment`)
 
 **Formato de Respuesta**: Todas las respuestas de citas incluyen los campos `date` y `time` formateados:
+
 - `date`: Fecha en formato `DD/MM/YYYY` (ej: "20/01/2025")
 - `time`: Hora en formato 12 horas con AM/PM (ej: "10:00 AM", "02:30 PM")
 
@@ -784,10 +786,25 @@ La API devuelve errores en formato JSON:
 - `404`: Recurso no encontrado
 - `500`: Error interno del servidor
 
+### Sistema de Logging
+
+La API incluye un sistema de logging que registra automáticamente:
+
+- **Todas las peticiones HTTP**: Se registra la ruta de cada petición recibida
+- **Errores**: Todos los errores se registran automáticamente en la consola con información detallada
+
+El logging se desactiva automáticamente cuando `NODE_ENV` está configurado como `test` para mantener los tests limpios.
+
+**Tipos de errores manejados**:
+
+- `CastError`: IDs malformados (retorna 400)
+- `ValidationError`: Errores de validación (retorna 400)
+- Errores genéricos: Errores del servidor (retorna 500)
+
 ## 📝 Notas Adicionales
 
 - **Formato de Fechas**: Las fechas se devuelven en formato legible (`DD/MM/YYYY`) y las horas en formato 12 horas con AM/PM (`hh:mm A`) usando moment.js con locale español
-- **Envío de Emails**: 
+- **Envío de Emails**:
   - Al crear una cita, se envía automáticamente un email de confirmación con estado "requested"
   - Al confirmar una cita, se envía un email de confirmación
   - Al cancelar una cita, se envía un email de notificación

@@ -1,6 +1,7 @@
 import { logError } from '../utils/logger';
 
-export default (error: any, request: any, response: any, next: any) => {
+export default (error: any, request: any, response: any) => {
+  logError(error);
   if (error.name === 'CastError') {
     return response.status(400).send({ error: 'Id used is malformed' });
   } else if (error.name === 'ValidationError') {
@@ -8,7 +9,4 @@ export default (error: any, request: any, response: any, next: any) => {
   } else {
     return response.status(500).json({ error: error.message });
   }
-
-  logError(error.message);
-  next(error);
 };

@@ -20,4 +20,4 @@ export const formatISODate = (isoString: string): FormattedDateTime => {
   const time = m.format('hh:mm A'); // am/pm nativo de moment
 
   return { date, time };
-}
+};
