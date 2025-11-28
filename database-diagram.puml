@@ -1,0 +1,67 @@
+@startuml Database Diagram
+
+skinparam linetype ortho
+skinparam roundcorner 10
+skinparam shadowing false
+skinparam class {
+    BackgroundColor #E1F5FF
+    BorderColor #0066CC
+    ArrowColor #0066CC
+}
+
+entity "User" as User {
+    * **id** : INTEGER <<PK>>
+    --
+    * email : VARCHAR(100) <<UNIQUE>>
+    * username : VARCHAR(100) <<UNIQUE>>
+    * password : VARCHAR(100)
+    * createdAt : DATETIME
+    * updatedAt : DATETIME
+}
+
+entity "Appointment" as Appointment {
+    * **id** : INTEGER <<PK>>
+    --
+    * patient : VARCHAR(150)
+    * email : VARCHAR(100)
+    * phone : VARCHAR(100)
+    * **insurance_id** : INTEGER <<FK>>
+    * date_time : DATETIME
+    * state : AppointmentState
+    * createdAt : DATETIME
+    * updatedAt : DATETIME
+}
+
+entity "Insurance" as Insurance {
+    * **id** : INTEGER <<PK>>
+    --
+    * name : VARCHAR(100) <<UNIQUE>>
+    * description : VARCHAR(255)
+    * active : BOOLEAN
+    * createdAt : DATETIME
+    * updatedAt : DATETIME
+}
+
+enum "AppointmentState" as AppointmentState {
+    requested
+    confirmed
+    cancelled
+}
+
+' Relationships
+Insurance ||--o{ Appointment : "has many"
+Appointment }o--|| AppointmentState : "uses"
+
+note right of Appointment
+    <b>Relaciones:</b>
+    • Muchos a Uno con Insurance
+    • Usa el enum AppointmentState
+end note
+
+note right of Insurance
+    <b>Relaciones:</b>
+    • Uno a Muchos con Appointment
+end note
+
+@enduml
+
